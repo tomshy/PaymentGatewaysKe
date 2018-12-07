@@ -1,5 +1,5 @@
 # PaymentGatewaysKe
-A Journey of Kenyan Payment Integrations
+A Developer Journey of Kenyan Payment Integrations
 
 On a scale of 1-5, here are my findings based on the following features:
 - Developer friendly
