@@ -13,6 +13,12 @@ On a scale of 1-5, here are my findings based on the following features:
 - Plugin Independent
 - Onboarding
 
+Publication links:
+Africa's talking: https://documenter.getpostman.com/view/5951719/RzfnkSEu
+Lipisha: https://documenter.getpostman.com/view/5951719/RzfnkSEw
+Safaricom: https://documenter.getpostman.com/view/5951719/RzfnkSEx
+
+
 |Payment Gateway| Developer Friendly| Well Documented |Accesibility   |Single Functionality   |Multiple Libraries   |Testability | Aggregation |Unified API |Reselling|Plugin Independent | Onboarding  |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 |Pesapal  |   |   |   |   |   |   |   |  |  |   |   |
