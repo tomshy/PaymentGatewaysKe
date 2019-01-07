@@ -1,0 +1,554 @@
+{
+	"info": {
+		"_postman_id": "d540a93d-f170-4a7c-8263-d7d5a323415c",
+		"name": "Visa",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "cybersource",
+			"item": [
+				{
+					"name": "process a payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-pay-token",
+								"value": "{{xPayToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}?apikey={{api_key}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "apikey",
+									"value": "{{api_key}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authorization reversal",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://sandbox.api.visa.com/cybersource/v2/payments/4963015523026180001545/reversals?apikey=UNE4CQ5MRW7000R0SOMY21EIeYc0Q2vCPiQqzfoGDsPSjVveA",
+							"protocol": "https",
+							"host": [
+								"sandbox",
+								"api",
+								"visa",
+								"com"
+							],
+							"path": [
+								"cybersource",
+								"v2",
+								"payments",
+								"4963015523026180001545",
+								"reversals"
+							],
+							"query": [
+								{
+									"key": "apikey",
+									"value": "UNE4CQ5MRW7000R0SOMY21EIeYc0Q2vCPiQqzfoGDsPSjVveA"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1d163637-f8b5-4ebd-8336-37eddace9c26",
+						"type": "text/javascript",
+						"exec": [
+							"//  message = timestamp + resource_path + query_string + request_body",
+							"let requestUrl = pm.request.url;",
+							"let timestamp = Math.floor(Date.now()/1000);",
+							"let resourcePath = requestUrl.getPath().replace('/cybersource/', '');",
+							"let queryString = requestUrl.getQueryString();",
+							"let requestBody = pm.request.body.toString();",
+							"",
+							"let message = \"\" + timestamp + resourcePath + queryString + requestBody;",
+							"console.log(message);",
+							"// XPayToken = \"xv2:\"+ timestamp + \":\" + SHA256HMAC(shared_secret, message)",
+							"let sharedSecret = pm.variables.get(\"shared_secret\");",
+							"var CryptoJS = require('crypto-js');",
+							"let HMAC = CryptoJS.HmacSHA256(message, sharedSecret);",
+							"let xPayToken = \"xv2:\" + timestamp + \":\" + HMAC;",
+							"console.log(xPayToken);",
+							"pm.environment.set(\"xPayToken\", xPayToken);",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "01203ba0-6d9d-42d3-9d1b-a078122e55b8",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Pull funds",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"acquirerCountryCode\": \"840\",\n    \"acquiringBin\": \"408999\",\n    \"amount\": \"124.02\",\n    \"businessApplicationId\": \"AA\",\n    \"cardAcceptor\": {\n        \"address\": {\n            \"country\": \"USA\",\n            \"county\": \"081\",\n            \"state\": \"CA\",\n            \"zipCode\": \"94404\"\n        },\n        \"idCode\": \"ABCD1234ABCD123\",\n        \"name\": \"Visa Inc. USA-Foster City\",\n        \"terminalId\": \"ABCD1234\"\n    },\n    \"cavv\": \"0700100038238906000013405823891061668252\",\n    \"foreignExchangeFeeTransaction\": \"11.99\",\n    \"localTransactionDateTime\": \"2018-12-28T10:48:32\",\n    \"retrievalReferenceNumber\": \"330000550000\",\n    \"senderCardExpiryDate\": \"2015-10\",\n    \"senderCurrencyCode\": \"USD\",\n    \"senderPrimaryAccountNumber\": \"4895142232120006\",\n    \"surcharge\": \"11.99\",\n    \"systemsTraceAuditNumber\": \"451001\",\n    \"nationalReimbursementFee\": \"11.22\",\n    \"cpsAuthorizationCharacteristicsIndicator\": \"Y\",\n    \"addressVerificationData\": {\n        \"street\": \"XYZ St\",\n        \"postalCode\": \"12345\"\n    }\n\n}"
+				},
+				"url": {
+					"raw": "https://sandbox.api.visa.com/visadirect/fundstransfer/v1/pullfundstransactions",
+					"protocol": "https",
+					"host": [
+						"sandbox",
+						"api",
+						"visa",
+						"com"
+					],
+					"path": [
+						"visadirect",
+						"fundstransfer",
+						"v1",
+						"pullfundstransactions"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Pull funds",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n    \"acquirerCountryCode\": \"840\",\n    \"acquiringBin\": \"408999\",\n    \"amount\": \"124.02\",\n    \"businessApplicationId\": \"AA\",\n    \"cardAcceptor\": {\n        \"address\": {\n            \"country\": \"USA\",\n            \"county\": \"081\",\n            \"state\": \"CA\",\n            \"zipCode\": \"94404\"\n        },\n        \"idCode\": \"ABCD1234ABCD123\",\n        \"name\": \"Visa Inc. USA-Foster City\",\n        \"terminalId\": \"ABCD1234\"\n    },\n    \"cavv\": \"0700100038238906000013405823891061668252\",\n    \"foreignExchangeFeeTransaction\": \"11.99\",\n    \"localTransactionDateTime\": \"2018-12-28T10:48:32\",\n    \"retrievalReferenceNumber\": \"330000550000\",\n    \"senderCardExpiryDate\": \"2015-10\",\n    \"senderCurrencyCode\": \"USD\",\n    \"senderPrimaryAccountNumber\": \"4895142232120006\",\n    \"surcharge\": \"11.99\",\n    \"systemsTraceAuditNumber\": \"451001\",\n    \"nationalReimbursementFee\": \"11.22\",\n    \"cpsAuthorizationCharacteristicsIndicator\": \"Y\",\n    \"addressVerificationData\": {\n        \"street\": \"XYZ St\",\n        \"postalCode\": \"12345\"\n    }\n\n}"
+						},
+						"url": {
+							"raw": "https://sandbox.api.visa.com/visadirect/fundstransfer/v1/pullfundstransactions",
+							"protocol": "https",
+							"host": [
+								"sandbox",
+								"api",
+								"visa",
+								"com"
+							],
+							"path": [
+								"visadirect",
+								"fundstransfer",
+								"v1",
+								"pullfundstransactions"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Apache"
+						},
+						{
+							"key": "X-SERVED-BY",
+							"value": "l73c022"
+						},
+						{
+							"key": "X-CORRELATION-ID",
+							"value": "1545994209_505_93_l73c022_VDP_ARM"
+						},
+						{
+							"key": "X-Backside-Transport",
+							"value": "OK OK,OK OK"
+						},
+						{
+							"key": "X-APP-STATUS",
+							"value": "200"
+						},
+						{
+							"key": "X-Global-Transaction-ID",
+							"value": "4222643421"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=2592000;includeSubdomains"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "-1"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Content-Language",
+							"value": "en-US"
+						},
+						{
+							"key": "Content-Length",
+							"value": "223"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Dec 2018 10:50:09 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "bm_sv=6AAB77FDACD8DF53C08CB9AE5609DA1B~CQ9d0jNiQP7Csab8cE9u1AuYWRPbWpw/ZN1qr04HrkSyxMkLs754MjCWwkz1Obuwg8luOdpmiD8T5pbENS3F4xLhNwkWmIBLhv5W37WHMA92HoZQ9+b7TP9r+cThyv/3cujaX0QRTK72sLAyTUIcU2g01z08uOfaHRMGluoMjnM=; Domain=.api.visa.com; Path=/; Max-Age=4946; HttpOnly"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"transactionIdentifier\": 996547867589379,\n    \"actionCode\": \"00\",\n    \"approvalCode\": \"98765X\",\n    \"responseCode\": \"5\",\n    \"transmissionDateTime\": \"2018-12-28T10:50:09.000Z\",\n    \"cavvResultCode\": \"8\",\n    \"cpsAuthorizationCharacteristicsIndicator\": \"3333\"\n}"
+				}
+			]
+		},
+		{
+			"name": "HelloWorld",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": ""
+				},
+				"description": "SSL test"
+			},
+			"response": []
+		},
+		{
+			"name": "Push funds",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json,application/octet-stream",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"acquirerCountryCode\": \"840\",\n    \"acquiringBin\": \"408999\",\n    \"amount\": \"124.05\",\n    \"businessApplicationId\": \"AA\",\n    \"cardAcceptor\": {\n        \"address\": {\n            \"country\": \"USA\",\n            \"county\": \"San Mateo\",\n            \"state\": \"CA\",\n            \"zipCode\": \"94404\"\n        },\n        \"idCode\": \"CA-IDCode-77765\",\n        \"name\": \"Visa Inc. USA-Foster City\",\n        \"terminalId\": \"TID-9999\"\n    },\n    \"localTransactionDateTime\": \"2018-12-28T14:27:17\",\n    \"merchantCategoryCode\": \"6012\",\n    \"pointOfServiceData\": {\n        \"motoECIIndicator\": \"0\",\n        \"panEntryMode\": \"90\",\n        \"posConditionCode\": \"00\"\n    },\n    \"recipientName\": \"rohan\",\n    \"recipientPrimaryAccountNumber\": \"4957030420210496\",\n    \"retrievalReferenceNumber\": \"412770451018\",\n    \"senderAccountNumber\": \"4653459515756154\",\n    \"senderAddress\": \"901 Metro Center Blvd\",\n    \"senderCity\": \"Foster City\",\n    \"senderCountryCode\": \"124\",\n    \"senderName\": \"Mohammed Qasim\",\n    \"senderReference\": \"\",\n    \"senderStateCode\": \"CA\",\n    \"sourceOfFundsCode\": \"05\",\n    \"systemsTraceAuditNumber\": \"451018\",\n    \"transactionCurrencyCode\": \"USD\",\n    \"transactionIdentifier\": \"996547867589379\"\n\n}"
+				},
+				"url": {
+					"raw": "https://sandbox.api.visa.com/visadirect/fundstransfer/v1/pushfundstransactions",
+					"protocol": "https",
+					"host": [
+						"sandbox",
+						"api",
+						"visa",
+						"com"
+					],
+					"path": [
+						"visadirect",
+						"fundstransfer",
+						"v1",
+						"pushfundstransactions"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Push funds",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json,application/octet-stream",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n    \"acquirerCountryCode\": \"840\",\n    \"acquiringBin\": \"408999\",\n    \"amount\": \"124.05\",\n    \"businessApplicationId\": \"AA\",\n    \"cardAcceptor\": {\n        \"address\": {\n            \"country\": \"USA\",\n            \"county\": \"San Mateo\",\n            \"state\": \"CA\",\n            \"zipCode\": \"94404\"\n        },\n        \"idCode\": \"CA-IDCode-77765\",\n        \"name\": \"Visa Inc. USA-Foster City\",\n        \"terminalId\": \"TID-9999\"\n    },\n    \"localTransactionDateTime\": \"2018-12-28T14:27:17\",\n    \"merchantCategoryCode\": \"6012\",\n    \"pointOfServiceData\": {\n        \"motoECIIndicator\": \"0\",\n        \"panEntryMode\": \"90\",\n        \"posConditionCode\": \"00\"\n    },\n    \"recipientName\": \"rohan\",\n    \"recipientPrimaryAccountNumber\": \"4957030420210496\",\n    \"retrievalReferenceNumber\": \"412770451018\",\n    \"senderAccountNumber\": \"4653459515756154\",\n    \"senderAddress\": \"901 Metro Center Blvd\",\n    \"senderCity\": \"Foster City\",\n    \"senderCountryCode\": \"124\",\n    \"senderName\": \"Mohammed Qasim\",\n    \"senderReference\": \"\",\n    \"senderStateCode\": \"CA\",\n    \"sourceOfFundsCode\": \"05\",\n    \"systemsTraceAuditNumber\": \"451018\",\n    \"transactionCurrencyCode\": \"USD\",\n    \"transactionIdentifier\": \"996547867589379\"\n\n}"
+						},
+						"url": {
+							"raw": "https://sandbox.api.visa.com/visadirect/fundstransfer/v1/pushfundstransactions",
+							"protocol": "https",
+							"host": [
+								"sandbox",
+								"api",
+								"visa",
+								"com"
+							],
+							"path": [
+								"visadirect",
+								"fundstransfer",
+								"v1",
+								"pushfundstransactions"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Apache"
+						},
+						{
+							"key": "X-SERVED-BY",
+							"value": "l73c038"
+						},
+						{
+							"key": "X-CORRELATION-ID",
+							"value": "1546008248_809_96_l73c038_VDP_ARM"
+						},
+						{
+							"key": "X-Backside-Transport",
+							"value": "OK OK,OK OK"
+						},
+						{
+							"key": "X-APP-STATUS",
+							"value": "200"
+						},
+						{
+							"key": "X-Global-Transaction-ID",
+							"value": "1652024701"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=2592000;includeSubdomains"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "-1"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Content-Language",
+							"value": "en-US"
+						},
+						{
+							"key": "Content-Length",
+							"value": "128"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Dec 2018 14:44:09 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "bm_sv=E07AC09544AABF558026B0F6DB741B42~CQ9d0jNiQP7Csab8cE9u1BkHr9Hg3I1mN3OtnMtnSsTEEUrJ1VJXLQIwyJqacjv7J4UTeRm7mG2Qrf43xuRpq6kkdYhx/F1wCTEmfOgTWQqus1DgzER1oEB7lxcPtLZCHgz8dmonhedM2MQu/5mvXvZH0lUtvtwpN5Kwt9yBQhU=; Domain=.api.visa.com; Path=/; Max-Age=7199; HttpOnly"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"transactionIdentifier\": 450197602128601,\n    \"actionCode\": \"65\",\n    \"responseCode\": \"5\",\n    \"transmissionDateTime\": \"2018-12-28T14:44:09.000Z\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Transaction query",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Resolve alias",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"alias\": \"254711001987\",\n    \"businessApplicationId\": \"PP\"\n\n}"
+				},
+				"url": {
+					"raw": "https://sandbox.api.visa.com/visaaliasdirectory/v1/resolve",
+					"protocol": "https",
+					"host": [
+						"sandbox",
+						"api",
+						"visa",
+						"com"
+					],
+					"path": [
+						"visaaliasdirectory",
+						"v1",
+						"resolve"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "1PhA71NBAZUKDJngWZ",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "7Z40DKINXAMTEQEG1N0Y2134pbhNctcY5uLPps1ZnKalT4FXY",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "58d0f603-e124-4ffc-ae4f-5b734f4ba0e6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "71a1c49b-28d1-401f-8e4e-fb79a5b16f13",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
