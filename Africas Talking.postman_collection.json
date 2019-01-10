@@ -104,50 +104,6 @@
 					"response": []
 				},
 				{
-					"name": "C2B",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "username",
-								"value": "sandbox",
-								"type": "text"
-							},
-							{
-								"key": "apiKey",
-								"value": "1129c6e264d5e9fef2a7b7f9ab6f348ec799216ede2e77668a3997791a316ff7",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"provider\":\"Athena\",\n\t\"clientAccount\":\"Melvin\",\n\t\"productName\":\"meltestig\",\n\t\"phoneNumber\":\"+254712345678\",\n\t\"value\":\"KES 7000.00\",\n\t\"providerMetadata\":{\"name\":\"melo\",\"country\":\"kenya\"}\n\t\n}"
-						},
-						"url": {
-							"raw": "https://payments.sandbox.africastalking.com/payments/mobile-c2b",
-							"protocol": "https",
-							"host": [
-								"payments",
-								"sandbox",
-								"africastalking",
-								"com"
-							],
-							"path": [
-								"payments",
-								"mobile-c2b"
-							]
-						},
-						"description": "Mobile Consumer To Business (C2B) functionality allows your application to receive payments that are initiated by a mobile subscriber."
-					},
-					"response": []
-				},
-				{
 					"name": "B2B",
 					"request": {
 						"method": "POST",
